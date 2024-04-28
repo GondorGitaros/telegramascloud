@@ -26,7 +26,8 @@ def upload_file():
     file.save(f"{file.filename}")  # Save the file locally
     with open(file.filename, 'rb') as f:
         future = loop.run_in_executor(executor, lambda: asyncio.run(bot.send_document(chat_id=chat_id, document=f)))
-    future.add_done_callback(lambda future: print(f"API response: {future.result()}"))  # Print the API response when the future completes
+        loop.run_until_complete(asyncio.wait_for(future, timeout=None))
+        print(f"API response: {future.result()}")
     os.remove(file.filename)
     return render_template('success.html')
 
